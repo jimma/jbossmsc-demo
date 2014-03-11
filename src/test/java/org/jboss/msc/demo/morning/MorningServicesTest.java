@@ -22,11 +22,14 @@
 
 package org.jboss.msc.demo.morning;
 
+import java.util.concurrent.TimeUnit;
+
 import org.jboss.msc.service.ServiceBuilder;
+import org.jboss.msc.service.ServiceBuilder.DependencyType;
 import org.jboss.msc.service.ServiceContainer;
 import org.jboss.msc.service.ServiceName;
-import org.jboss.msc.service.ServiceBuilder.DependencyType;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -40,24 +43,39 @@ public class MorningServicesTest {
     public static final ServiceName COFFEESN = ServiceName.JBOSS.of("Coffee");
     public static final ServiceName TOASTSN = ServiceName.JBOSS.of("Toast");
     public static final ServiceName GRINDSN = ServiceName.JBOSS.of("Grind");
+    
+    private ServiceContainer mscContainer = null;
+    @Before
+    public void createContainer () {
+    	mscContainer = ServiceContainer.Factory.create("MorningServer", true);
+    }
+    
+    
+    @After
+    public void shutDownContainer () throws Exception  {
+    	mscContainer.shutdown();
+    	while (!mscContainer.isShutdownComplete()) {
+    		mscContainer.awaitTermination(100, TimeUnit.MILLISECONDS);
+    	}
+    	mscContainer = null;
+    }
 
     @Test
     public void testStartServices() throws Exception {
-        ServiceContainer mscContainer = ServiceContainer.Factory.create("MorningServer", true);
         // ToothBrush Service
         ToothBrushService toothBrushService = new ToothBrushService();
         ServiceBuilder<Tooth> serviceBuilder = mscContainer.addService(TOOTHBRUSHSN, toothBrushService);
         // Depends on Breakfeast and injected the tooth from it
-        /*serviceBuilder.addDependency(DependencyType.REQUIRED, BREAKFEASTSN, Tooth.class, toothBrushService.getToothInjector());
-        serviceBuilder.install();*/
+        serviceBuilder.addDependency(DependencyType.REQUIRED, BREAKFEASTSN, Tooth.class, toothBrushService.getToothInjector());
+        serviceBuilder.install();
 
         // breakfeast service
-        /*BreakfeastService breakFeastService = new BreakfeastService();
+        BreakfeastService breakFeastService = new BreakfeastService();
         ServiceBuilder<Tooth> breakfeastServiceBuilder = mscContainer.addService(BREAKFEASTSN, breakFeastService);
         breakfeastServiceBuilder.addDependency(DependencyType.REQUIRED, TOASTSN, Bread.class, breakFeastService.getBreadInjector());
         breakfeastServiceBuilder.addDependency(DependencyType.REQUIRED, COFFEESN, Coffee.class, breakFeastService.getCoffeeInjector());
         breakfeastServiceBuilder.install();
-        */
+        
         // coffee service
         CoffeeMakeService coffeeService = new CoffeeMakeService();
         ServiceBuilder<Coffee> coffeeServiceBuilder = mscContainer.addService(COFFEESN, coffeeService);
@@ -66,14 +84,44 @@ public class MorningServicesTest {
         coffeeServiceBuilder.install();
 
         // grind service
-        CoffeeGrindService grindService = new CoffeeGrindService("Lily");
+        CoffeeGrindService grindService = new CoffeeGrindService("illy");
         ServiceBuilder<CoffeePowder> grindServiceBuilder = mscContainer.addService(GRINDSN, grindService);
         grindServiceBuilder.install();
 
         // breadService
-        /*ToastService toastService = new ToastService(new Bread());
+        ToastService toastService = new ToastService(new Bread());
         ServiceBuilder<Bread> toastServiceBuilder = mscContainer.addService(TOASTSN, toastService);
-        toastServiceBuilder.install();*/
-        Thread.sleep(1000000000);
+        mscContainer.awaitStability();
     }
+    
+    @Test
+    public void testSingleService() throws Exception {
+        // breadService
+        ToastService toastService = new ToastService(new Bread());
+        ServiceBuilder<Bread> toastServiceBuilder = mscContainer.addService(TOASTSN, toastService);
+        toastServiceBuilder.install();
+        mscContainer.awaitStability();
+    }
+    
+    @Test
+    public void testTwoServices() throws Exception {
+        
+        // coffee service
+        CoffeeMakeService coffeeService = new CoffeeMakeService();
+        ServiceBuilder<Coffee> coffeeServiceBuilder = mscContainer.addService(COFFEESN, coffeeService);
+        coffeeServiceBuilder.addDependency(DependencyType.REQUIRED, GRINDSN, CoffeePowder.class,
+                coffeeService.getCoffeePowderInjector());
+        coffeeServiceBuilder.install();
+        mscContainer.awaitStability();
+        
+        System.out.println("------******************************************************------");
+        
+        // grind service
+        CoffeeGrindService grindService = new CoffeeGrindService("illy");
+        ServiceBuilder<CoffeePowder> grindServiceBuilder = mscContainer.addService(GRINDSN, grindService);
+        grindServiceBuilder.install();
+        mscContainer.awaitStability();
+        
+    }
+    
 }

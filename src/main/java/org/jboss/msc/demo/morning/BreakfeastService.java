@@ -49,11 +49,11 @@ public class BreakfeastService implements Service<Tooth> {
     /* 
      * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
      */
-    public void start(StartContext context) throws StartException {
-        MessagesLogger.ROOT.startService(this.getClass().getSimpleName());
+    public void start(StartContext context) throws StartException {     
         System.out.println("Coffee is " + coffee.getValue().getType());
         System.out.println("Bread is toasted ? + " + bread.getValue().isToasted());
         tooth = Tooth.DIRTY;
+        MessagesLogger.ROOT.startService(this.getClass().getSimpleName());
         
     }
 

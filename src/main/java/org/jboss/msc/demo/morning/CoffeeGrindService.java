@@ -49,10 +49,10 @@ public class CoffeeGrindService implements Service<CoffeePowder>{
     /* (non-Javadoc)
      * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
      */
-    public void start(StartContext context) throws StartException {
-        MessagesLogger.ROOT.startService(this.getClass().getSimpleName());
+    public void start(StartContext context) throws StartException {      
         powder = new CoffeePowder(brand);
         System.out.println("Grind coffee beans brand : " + powder.getBrand());
+        MessagesLogger.ROOT.startService(this.getClass().getSimpleName());
         
     }
 

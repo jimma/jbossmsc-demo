@@ -44,12 +44,11 @@ public class ToothBrushService implements Service<Tooth> {
 
     }
 
-    public void start(StartContext context) throws StartException {
-        MessagesLogger.ROOT.startService(this.getClass().getSimpleName());
+    public void start(StartContext context) throws StartException {       
         if (tooth.getValue().equals(Tooth.DIRTY)) {
             result = Tooth.CLEANED;
         }
-
+        MessagesLogger.ROOT.startService(this.getClass().getSimpleName());
     }
 
     public void stop(StopContext context) {

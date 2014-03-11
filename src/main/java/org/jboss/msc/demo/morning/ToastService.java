@@ -48,9 +48,9 @@ public class ToastService implements Service<Bread>{
     /* (non-Javadoc)
      * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
      */
-    public void start(StartContext context) throws StartException {
-        MessagesLogger.ROOT.startService(getClass().getSimpleName());
+    public void start(StartContext context) throws StartException {       
         bread.setToasted(true);
+        MessagesLogger.ROOT.startService(getClass().getSimpleName());
         
     }
 

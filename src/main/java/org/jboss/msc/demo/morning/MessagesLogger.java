@@ -37,9 +37,9 @@ import org.jboss.logging.annotations.MessageLogger;
 public interface MessagesLogger extends BasicLogger {
 	MessagesLogger ROOT = Logger.getMessageLogger(MessagesLogger.class, "org.jboss.msc.demo.morning");
     @LogMessage(level = INFO)
-    @Message(id = 1000, value = "Start service %s")
+    @Message(id = 1000, value = "Service %s started")
     void startService(String serviceName);
     @LogMessage(level = INFO)
-    @Message(id = 1001, value = "Stop service %s")
+    @Message(id = 1001, value = "Service %s stopped")
     void stopService(String serviceName);
 }

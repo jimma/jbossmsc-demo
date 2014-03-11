@@ -48,10 +48,10 @@ public class CoffeeMakeService implements Service<Coffee> {
     /* (non-Javadoc)
      * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
      */
-    public void start(StartContext context) throws StartException {
-        MessagesLogger.ROOT.startService(this.getClass().getName());
+    public void start(StartContext context) throws StartException {     
         System.out.println("Coffee powder brand : " + powder.getValue().getBrand());
         coffee = new Coffee(Coffee.CoffeeType.Espresso);
+        MessagesLogger.ROOT.startService(this.getClass().getName());
         
     }
 
